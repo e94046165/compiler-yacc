@@ -7,12 +7,11 @@ extern YYSTYPE yylval; //YYSTYPE
 letter [a-zA-Z]
 digit [0-9]
 id {letter}+({letter}|{digit})*
-int_digit ("-"?[1-9]+[0-9]*)|[0] 
-float_digit "-"?{digit}+"."{digit}+
+
+int_digit ([1-9]+[0-9]*)|[0] 
+float_digit {digit}+"."{digit}+
 number {digit}+|{float_digit} 
 ignore [\t\r\s]+|" "+
-comment_start "\/\/"|"\/\*"
-comment_end   "\*\/"
 
 %option yylineno
 
@@ -47,9 +46,9 @@ comment_end   "\*\/"
 "%="	{ return MOA;}
 
  /* Logical */
-"&&"	{ }
-"||"	{ }
-"!"		{ }
+"&&"	{ return AND;}
+"||"	{ return OR;}
+"!"		{ return NOT;}
 
  /* Delimiters */
 "("		{ return '(';}
@@ -58,8 +57,8 @@ comment_end   "\*\/"
 "}"		{ }
 
  /* Print Keywords */	
-"print"		{ return PT;}
-"println"	{ }
+"print"		{ dS(yytext);return PT;}
+"println"	{ dS(yytext);return PT;}
 
  /* Condition and Loop Keywords */
 "if"		{ }
@@ -72,28 +71,27 @@ comment_end   "\*\/"
 "int"		{dS(yytext);return INT; }
 "float32"	{dS(yytext);return FLOAT; }
 
- /* String Constant */
+
 \"				        { BEGIN STRING_STATE;}
 <STRING_STATE>\"		{ BEGIN INITIAL;}
-<STRING_STATE>[^"]*		{ }
+<STRING_STATE>[^"]*		{ dS(yytext); return STRING_LIT;}
 
  /* Number Constant */
-{int_digit}	{yylval.i_val = atoi(yytext); return I_CONST; }
+{int_digit}		{yylval.i_val = atoi(yytext); return I_CONST; }
 {float_digit}	{yylval.f_val = atof(yytext);return F_CONST; }
 
  /* C type Comment */
-"/*"				{ BEGIN COMMENT; }
-<COMMENT>[^*\n]+	{ }
-<COMMENT>\n			{ }
+"/*"				{ BEGIN COMMENT; return COMMENTBEGIN;}
+<COMMENT>[^*\n]+	{ dS(yytext); return INCOMMENT;}
+<COMMENT>\n			{ return COMMENTN;}
 <COMMENT>"*"		{ }
-<COMMENT>"*/"		{ BEGIN INITIAL; }
+<COMMENT>"*/"		{ BEGIN INITIAL; return COMMENTEND;}
 
  /* C++ type Comment */
-\/\/.*	{ }
+\/\/.*	{dS(yytext); return OLCOMMENT;}
 
  /* Variable ID */
  {id}       { dS(yytext);return ID;}
-
  /* others */
 
 [\n]		{ return NEWLINE;}

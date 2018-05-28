@@ -54,25 +54,34 @@ extern int yydebug;
     NEWLINE = 264,
     INC = 265,
     DEC = 266,
-    PT = 267,
-    L = 268,
-    S = 269,
-    LE = 270,
-    SE = 271,
-    EE = 272,
-    NE = 273,
-    AA = 274,
-    SA = 275,
-    MA = 276,
-    DA = 277,
-    MOA = 278,
-    I_CONST = 279,
-    F_CONST = 280,
-    STRING = 281,
-    INT = 282,
-    FLOAT = 283,
-    VOID = 284,
-    ID = 285
+    L = 267,
+    S = 268,
+    LE = 269,
+    SE = 270,
+    EE = 271,
+    NE = 272,
+    AA = 273,
+    SA = 274,
+    MA = 275,
+    DA = 276,
+    MOA = 277,
+    OR = 278,
+    NOT = 279,
+    AND = 280,
+    COMMENTBEGIN = 281,
+    COMMENTEND = 282,
+    COMMENTN = 283,
+    I_CONST = 284,
+    F_CONST = 285,
+    STRING = 286,
+    INT = 287,
+    FLOAT = 288,
+    VOID = 289,
+    ID = 290,
+    STRING_LIT = 291,
+    INCOMMENT = 292,
+    OLCOMMENT = 293,
+    PT = 294
   };
 #endif
 /* Tokens.  */
@@ -85,38 +94,47 @@ extern int yydebug;
 #define NEWLINE 264
 #define INC 265
 #define DEC 266
-#define PT 267
-#define L 268
-#define S 269
-#define LE 270
-#define SE 271
-#define EE 272
-#define NE 273
-#define AA 274
-#define SA 275
-#define MA 276
-#define DA 277
-#define MOA 278
-#define I_CONST 279
-#define F_CONST 280
-#define STRING 281
-#define INT 282
-#define FLOAT 283
-#define VOID 284
-#define ID 285
+#define L 267
+#define S 268
+#define LE 269
+#define SE 270
+#define EE 271
+#define NE 272
+#define AA 273
+#define SA 274
+#define MA 275
+#define DA 276
+#define MOA 277
+#define OR 278
+#define NOT 279
+#define AND 280
+#define COMMENTBEGIN 281
+#define COMMENTEND 282
+#define COMMENTN 283
+#define I_CONST 284
+#define F_CONST 285
+#define STRING 286
+#define INT 287
+#define FLOAT 288
+#define VOID 289
+#define ID 290
+#define STRING_LIT 291
+#define INCOMMENT 292
+#define OLCOMMENT 293
+#define PT 294
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 37 "compiler_hw2.y" /* yacc.c:1909  */
+#line 39 "compiler_hw2.y" /* yacc.c:1909  */
 
     int i_val;
     double f_val;
     char* string;
 
-#line 120 "y.tab.h" /* yacc.c:1909  */
+#line 138 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

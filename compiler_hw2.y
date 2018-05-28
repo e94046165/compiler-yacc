@@ -11,16 +11,18 @@ int lookup_symbol();
 void create_symbol();
 void insert_symbol();
 void dump_symbol();
-int count = 1;
+	int count = 1;
 	int comment_count = 0;
+	int comment_check = 0;
+	int float_flag = 0;
 	int temp = 0;
-	//int comment_oneline_flag = 0;
-	//int comment_block_flag = 0;
 	int i;	
+	int x, y;
 	double value;
 	int dec_flag = 0;
 	char* TYPE = '\0';
 	char* id;
+	int index;
 	
 	char* new_symbol = '\0';
 	struct symbol{
@@ -43,9 +45,11 @@ int count = 1;
 /* Token without return */
 %token PRINT PRINTLN 
 %token IF ELSE FOR
-%token VAR NEWLINE INC DEC PT
+%token VAR NEWLINE INC DEC 
 %token L S LE SE EE NE
 %token AA SA MA DA MOA
+%token OR NOT AND
+%token COMMENTBEGIN COMMENTEND COMMENTN
 
 /* Token with return, which need to sepcify type */
 %token <i_val> I_CONST
@@ -55,7 +59,10 @@ int count = 1;
 %token <string> FLOAT
 %token <string> VOID
 %token <string> ID
-%type <f_val> const 
+%token <string> STRING_LIT
+%token <string> INCOMMENT
+%token <string> OLCOMMENT
+%token <string> PT
 %left '|' '&'
 %left '+'  '-'
 %left '*'  '/'  '%'
@@ -63,8 +70,12 @@ int count = 1;
 
 /* Nonterminal with return, which need to sepcify type */
 %type <string> type
-%type <string> relation
+%type <string> relation 
 %type <f_val> expression
+%type <f_val> const 
+%type <string> printstat
+%type <string> commentstat
+
 /* Yacc will start at this nonterminal */
 %start program
 
@@ -72,7 +83,7 @@ int count = 1;
 %%
 
 program
-    : program stat
+    : program stat 
     |
 ;
 
@@ -81,28 +92,74 @@ stat
 	| expression  stat{
 		//printf("%.2f\n", $1);
 	}
-	| relation stat{
-		printf("comparison\n");
-		printf("%d\n", $1);
-	}
+	| relation stat
 	/*
     | print_func*/
-	| NEWLINE
-	| PT{
-		dump_symbol();
+	| NEWLINE{
+		count++;
 	}
+	| printstat stat
+	| commentstat stat
 	|{}
 ;
-
+commentstat
+	:COMMENTBEGIN{
+		comment_count++;
+		printf("\nCOMMENT BEGIN\n");
+	}
+	|INCOMMENT{
+		printf("%s", $1);
+	}
+	|COMMENTN{
+		printf("\n");
+		comment_count++;
+		count++;
+	}
+	|COMMENTEND{
+		printf("\nEND COMMENT\n");
+	}
+	|OLCOMMENT{
+		char* com = malloc(strlen($1)-1);
+		sscanf($1, "//%s",  com);
+		printf("ONELINE COMMENT :\n%s\n", com);
+		comment_count++;
+	}
+	;
+printstat
+	:PT '(' STRING_LIT ')'{
+		char* s = malloc(strlen($3)+1);
+		strcpy(s , $3);
+		int i = 0;
+		if(strstr($1, "l") != '\0')printf("Println : ");
+		else printf("Print : ");
+		while(s[i] != '\0'){
+			if(s[i] != '"') printf("%c", s[i]);
+			i++;
+		}
+		printf("\n");
+	}
+	|PT '(' expression ')'{
+		if(strstr($1, "l") != '\0')printf("Println : ");
+		else printf("Print : ");
+		printf("%f\n", $3);
+	}
+;
 declaration
-    : VAR ID type '=' expression NEWLINE{
+    : VAR ID type '=' expression{
 		dec_flag = 1;
 	 	TYPE = $3;
+		
+		if(float_flag == 1 && strcmp(TYPE,"int")==0){
+			printf("<ERROR>Try to assign a float number to the int varible: %s (line: %d)\n", $2, count);
+		}
+		
 		value = $5;
+		printf("ASSIGN\n");
 		insert_symbol($2);
+		float_flag = 0;
 		dec_flag = 0;
 	}
-    | VAR ID type NEWLINE{
+    | VAR ID type{
 		dec_flag = 1;
 		TYPE = $3;
 		//printf("%s %s\n", $2, $3);
@@ -116,6 +173,7 @@ const
 	}
 	|F_CONST{
 		$$ = $1;
+		float_flag = 1;
 	}
 ;
 type
@@ -125,40 +183,46 @@ type
 ;
 relation
 	: expression L expression{
+		printf("<Comparason>Greater than?: ");
 		if($1 > $3){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	| expression S expression{
+		printf("<Comparason>Less than?: ");
 		if($1 < $3){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	| expression LE expression{
+		printf("<Comparason>Greater than or Equal?: ");
 		if(($1 > $3)|($1 == $3) ){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	| expression SE expression{
+		printf("<Comparason>Less than or Equal?: ");
 		if(($1 < $3)|($1 == $3) ){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	| expression EE expression{
+		printf("<Comparason>Equal?: ");
 		if($1 == $3 ){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	| expression NE expression{
+		printf("<Comparason>Not Equal?: ");
 		if($1 != $3 ){
-			$$ = 1;
+			printf("True\n");
 		}
-		else $$ = 0;
+		else printf("False\n");
 	}
 	;
 expression 
@@ -166,48 +230,77 @@ expression
 		$$ = $2;
 	}
 	| ID '=' expression{
-		int index;
+		printf("ASSIGN\n");
 		if((index = lookup_symbol($1)) == -1){
-			printf("ERROR: undefined variable: %s\n", $1);
+			printf("<ERROR> can’t find variable %s (line %d)\n", $1, count);
 		}else{
-		symbol_table[index]->value = $3;
-		printf("%f\n", $3);
+		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
+			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", $1, count);
+		}
+		else 
+			symbol_table[index]->value = $3;
 		$$ = $3;
+		float_flag = 0;
 		}
 	}
 	| expression '+' expression{
-		{ $$  =  $1 + $3; }
+		printf("Add\n");
+		$$  =  $1 + $3; 
 	}
 	| expression '-' expression{
-		{ $$  =  $1 - $3; }
+		printf("Sub\n");
+		$$  =  $1 - $3; 
+		
 	}
 	| expression '*' expression{
-		{ $$  =  $1 * $3; }
+		printf("Mul\n");
+			$$  =  $1 * $3; 
 	}
 	| expression '/' expression{
-		{ $$  =  $1 / $3; }
+		if($3 == 0) printf("<ERROR>The divisor can’t be 0 (line %d)\n", count);
+		else{
+			printf("Div\n");
+			if(float_flag == 1){ 
+			printf("float operation\n");
+			$$  =  $1 / $3; 
+		}
+		else {
+			$$ = (int)$1 / (int)$3;
+		}
+		}
 	} 
 	| expression '%' expression{
-		{ int a = $1; int b = $3; 
-		$$  =  a % b; }
+		printf("Mod\n");
+		if(float_flag == 1){
+			printf("<ERROR>MOD operation can't deal with type float (line %d)\n", count);
+		}
+		int a = $1; int b = $3; 
+		$$  =  a % b;
 	}
-	| INC expression{
-		{ $$  =  $2 + 1; }
+	| expression INC {
+		$$  =  $1;
+		printf("INC\n");
+		symbol_table[index]->value = $1+1;
 	}
-	| DEC expression{
-		{ $$  =  $2 - 1; }
+	| expression DEC {
+		$$  =  $1;
+		printf("DEC\n");
+		symbol_table[index]->value = $1-1;
 	}
 	| const{
 		$$ = $1;
 	}
 	| ID{
-		int index;
+		type_check($1);
 		if((index = lookup_symbol($1)) == -1){
-			printf("ERROR: undefined variable: %s\n", $1);
+			printf("<ERROR> can’t find variable %s (line %d)\n", $1, count);
 		}
-		else
-		$$ = symbol_table[index]->value;
+		else{
+			if(strcmp(symbol_table[index]->type,"float32")==0){ float_flag = 1; printf("a float variable\n");}
+			$$ = symbol_table[index]->value;
+		}	
 	}
+	|{}
 	;
 %%
 
@@ -215,17 +308,18 @@ expression
 int main(int argc, char** argv)
 {
     yylineno = 0;
-
+	
     yyparse();
-
+	printf("\nTotal line : %d Comment Line: %d\n", count,comment_count);
+	dump_symbol();
     return 0;
 }
 
 void insert_symbol(char* s) {
-	printf("%s \t%s TYPE VAR\n", s, TYPE);
+	//printf("%s \t%s TYPE VAR\n", s, TYPE);
 	if(num == 0) create_symbol();
 	if(lookup_symbol(s)>0){
-			printf("ERROR: redefined %s\n", s);
+			printf("re-declaration for variable %s (line %d)\n", s, count);
 			return ;
 		}
 		strcpy(symbol_table[num]->id, s);
@@ -249,6 +343,16 @@ int lookup_symbol(char* s) {
 	}
 	return -1;
 }
+int type_check(char* s){
+	int index = lookup_symbol(s);
+	if(strcmp(symbol_table[index]->type ,"float32") == 0) 
+		return 1;
+	else 
+		return 0;
+}
+
+
+
 void create_symbol() {
 	num = 1;
 	printf("Create a symbol table\n");
@@ -262,8 +366,13 @@ void create_symbol() {
 
 void dump_symbol() {
 	int i;
-	printf("The symbol table dump:\n");
+	
+	printf("\nThe symbol table :\n\n");
+	printf("Index\tID\tType\tValue\n");
 	for(i = 1; i < num; i++){
-		printf("%d\t%s\t%s\t%.2f\n", symbol_table[i]->index, symbol_table[i]->id, symbol_table[i]->type,symbol_table[i]->value);
+		if(strcmp(symbol_table[i]->type, "float32")==0)
+			printf("%d\t%s\t%s\t%.2f\n", symbol_table[i]->index, symbol_table[i]->id, symbol_table[i]->type,symbol_table[i]->value);
+		else
+			printf("%d\t%s\t%s\t%d\n", symbol_table[i]->index, symbol_table[i]->id, symbol_table[i]->type,(int)symbol_table[i]->value);
 	} 
 }

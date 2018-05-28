@@ -13,7 +13,7 @@ parser:
 	yacc ${YFLAG} ${FNAME}.y
 
 test: compile
-	./${EXE} < input/arithmetic.go
+	./${EXE} < input/test.go
 
 clean:
 	rm ${EXE} y.tab* lex.* y.output
