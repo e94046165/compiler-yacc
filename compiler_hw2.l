@@ -8,8 +8,8 @@ letter [a-zA-Z]
 digit [0-9]
 id {letter}+({letter}|{digit})*
 
-int_digit ([1-9]+[0-9]*)|[0] 
-float_digit {digit}+"."{digit}+
+int_digit "-"?([1-9]+[0-9]*)|[0] 
+float_digit "-"?{digit}+"."{digit}+
 number {digit}+|{float_digit} 
 ignore [\t\r\s]+|" "+
 

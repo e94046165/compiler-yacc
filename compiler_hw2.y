@@ -15,6 +15,7 @@ void dump_symbol();
 	int comment_count = 0;
 	int comment_check = 0;
 	int float_flag = 0;
+	int OP_float_flag = 0;
 	int temp = 0;
 	int i;	
 	int x, y;
@@ -75,6 +76,7 @@ void dump_symbol();
 %type <f_val> const 
 %type <string> printstat
 %type <string> commentstat
+%type <f_val> assignstat
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -100,6 +102,7 @@ stat
 	}
 	| printstat stat
 	| commentstat stat
+	| assignstat stat
 	|{}
 ;
 commentstat
@@ -174,6 +177,7 @@ const
 	|F_CONST{
 		$$ = $1;
 		float_flag = 1;
+		OP_float_flag = 1;
 	}
 ;
 type
@@ -225,23 +229,52 @@ relation
 		else printf("False\n");
 	}
 	;
-expression 
-	: '(' expression ')'{
-		$$ = $2;
-	}
-	| ID '=' expression{
+assignstat
+	: ID '=' expression{
 		printf("ASSIGN\n");
+		type_check($1);
+		symbol_table[index]->value = $3;;
+	}
+	| ID AA expression{
+		printf("ADD ASSIGN\n");
+		type_check($1);
+		symbol_table[index]->value += $3;
+	}
+	| ID SA expression{
+		printf("SUB ASSIGN\n");
+		type_check($1);
+		symbol_table[index]->value -= $3;
+	}
+	| ID MA expression{
+		printf("MUL ASSIGN\n");
+		type_check($1);
+		symbol_table[index]->value *= $3;
+	}
+	| ID DA expression{
+		printf("DIV ASSIGN\n");
+		type_check($1);
+		symbol_table[index]->value *= $3;
+	}
+	| ID MOA expression{
+		printf("MOD ASSIGN\n");
 		if((index = lookup_symbol($1)) == -1){
 			printf("<ERROR> can’t find variable %s (line %d)\n", $1, count);
 		}else{
 		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
 			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", $1, count);
 		}
-		else 
-			symbol_table[index]->value = $3;
-		$$ = $3;
-		float_flag = 0;
+		if((OP_float_flag == 1)||strcmp(symbol_table[index]->type,"float32")==0){
+			printf("<ERROR>MOD operation can't deal with type float (line %d)\n", count);
 		}
+		float_flag = 0;
+		OP_float_flag = 0;
+		}
+		symbol_table[index]->value =(int)symbol_table[index]->value%(int)$3;
+	}
+	;
+expression 
+	: '(' expression ')'{
+		$$ = $2;
 	}
 	| expression '+' expression{
 		printf("Add\n");
@@ -260,10 +293,12 @@ expression
 		if($3 == 0) printf("<ERROR>The divisor can’t be 0 (line %d)\n", count);
 		else{
 			printf("Div\n");
-			if(float_flag == 1){ 
-			printf("float operation\n");
-			$$  =  $1 / $3; 
+			if( OP_float_flag == 1){ 
+				//printf("float operation\n");
+				$$  =  $1 / $3;
+				OP_float_flag = 0;
 		}
+		
 		else {
 			$$ = (int)$1 / (int)$3;
 		}
@@ -271,8 +306,9 @@ expression
 	} 
 	| expression '%' expression{
 		printf("Mod\n");
-		if(float_flag == 1){
+		if( OP_float_flag == 1){
 			printf("<ERROR>MOD operation can't deal with type float (line %d)\n", count);
+			OP_float_flag = 0;
 		}
 		int a = $1; int b = $3; 
 		$$  =  a % b;
@@ -291,16 +327,19 @@ expression
 		$$ = $1;
 	}
 	| ID{
-		type_check($1);
 		if((index = lookup_symbol($1)) == -1){
 			printf("<ERROR> can’t find variable %s (line %d)\n", $1, count);
 		}
 		else{
-			if(strcmp(symbol_table[index]->type,"float32")==0){ float_flag = 1; printf("a float variable\n");}
+			if(strcmp(symbol_table[index]->type,"float32")==0)
+				{ 
+				  float_flag = 1; 
+				  OP_float_flag = 1;
+				  printf("a float variable\n");
+				}
 			$$ = symbol_table[index]->value;
 		}	
 	}
-	|{}
 	;
 %%
 
@@ -314,7 +353,17 @@ int main(int argc, char** argv)
 	dump_symbol();
     return 0;
 }
-
+void type_check(char * name){
+		if((index = lookup_symbol(name)) == -1){
+			printf("<ERROR> can’t find variable %s (line %d)\n", name, count);
+		}else{
+		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
+			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", name, count);
+		}
+		float_flag = 0;
+		OP_float_flag = 0;
+		}
+}
 void insert_symbol(char* s) {
 	//printf("%s \t%s TYPE VAR\n", s, TYPE);
 	if(num == 0) create_symbol();
@@ -343,15 +392,6 @@ int lookup_symbol(char* s) {
 	}
 	return -1;
 }
-int type_check(char* s){
-	int index = lookup_symbol(s);
-	if(strcmp(symbol_table[index]->type ,"float32") == 0) 
-		return 1;
-	else 
-		return 0;
-}
-
-
 
 void create_symbol() {
 	num = 1;
