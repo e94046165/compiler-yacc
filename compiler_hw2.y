@@ -119,7 +119,7 @@ commentstat
 		count++;
 	}
 	|COMMENTEND{
-		printf("\nEND COMMENT\n");
+		printf("\nEND COMMENT\n\n");
 	}
 	|OLCOMMENT{
 		char* com = malloc(strlen($1)-1);
@@ -144,7 +144,9 @@ printstat
 	|PT '(' expression ')'{
 		if(strstr($1, "l") != '\0')printf("Println : ");
 		else printf("Print : ");
-		printf("%f\n", $3);
+		if((int)$3 == $3)
+			printf("%d\n", (int)$3);
+		else printf("%f\n", $3);
 	}
 ;
 declaration
@@ -157,7 +159,7 @@ declaration
 		}
 		
 		value = $5;
-		printf("ASSIGN\n");
+		//printf("ASSIGN\n");
 		insert_symbol($2);
 		float_flag = 0;
 		dec_flag = 0;
@@ -232,27 +234,27 @@ relation
 assignstat
 	: ID '=' expression{
 		printf("ASSIGN\n");
-		type_check($1);
-		symbol_table[index]->value = $3;;
+		if(type_check($1))
+			symbol_table[index]->value = $3;;
 	}
 	| ID AA expression{
 		printf("ADD ASSIGN\n");
-		type_check($1);
-		symbol_table[index]->value += $3;
+		if(type_check($1))
+			symbol_table[index]->value += $3;
 	}
 	| ID SA expression{
 		printf("SUB ASSIGN\n");
-		type_check($1);
-		symbol_table[index]->value -= $3;
+		if(type_check($1))
+			symbol_table[index]->value -= $3;
 	}
 	| ID MA expression{
 		printf("MUL ASSIGN\n");
-		type_check($1);
+		if(type_check($1))
 		symbol_table[index]->value *= $3;
 	}
 	| ID DA expression{
 		printf("DIV ASSIGN\n");
-		type_check($1);
+		if(type_check($1))
 		symbol_table[index]->value *= $3;
 	}
 	| ID MOA expression{
@@ -263,13 +265,13 @@ assignstat
 		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
 			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", $1, count);
 		}
-		if((OP_float_flag == 1)||strcmp(symbol_table[index]->type,"float32")==0){
+		else if((OP_float_flag == 1)||strcmp(symbol_table[index]->type,"float32")==0){
 			printf("<ERROR>MOD operation can't deal with type float (line %d)\n", count);
-		}
+		}else
+		symbol_table[index]->value =(int)symbol_table[index]->value%(int)$3;
 		float_flag = 0;
 		OP_float_flag = 0;
 		}
-		symbol_table[index]->value =(int)symbol_table[index]->value%(int)$3;
 	}
 	;
 expression 
@@ -353,15 +355,18 @@ int main(int argc, char** argv)
 	dump_symbol();
     return 0;
 }
-void type_check(char * name){
+int type_check(char * name){
 		if((index = lookup_symbol(name)) == -1){
 			printf("<ERROR> can’t find variable %s (line %d)\n", name, count);
+			return 0;
 		}else{
 		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
 			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", name, count);
+			return 0;
 		}
 		float_flag = 0;
 		OP_float_flag = 0;
+		return 1;
 		}
 }
 void insert_symbol(char* s) {

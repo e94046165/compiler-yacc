@@ -542,10 +542,10 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint16 yyrline[] =
 {
        0,    88,    88,    89,    93,    94,    97,   100,   103,   104,
-     105,   106,   109,   113,   116,   121,   124,   132,   144,   151,
-     165,   174,   177,   184,   185,   186,   189,   196,   203,   210,
-     217,   224,   233,   238,   243,   248,   253,   258,   276,   279,
-     283,   288,   292,   307,   316,   321,   326,   329
+     105,   106,   109,   113,   116,   121,   124,   132,   144,   153,
+     167,   176,   179,   186,   187,   188,   191,   198,   205,   212,
+     219,   226,   235,   240,   245,   250,   255,   260,   278,   281,
+     285,   290,   294,   309,   318,   323,   328,   331
 };
 #endif
 
@@ -1437,7 +1437,7 @@ yyreduce:
   case 15:
 #line 121 "compiler_hw2.y" /* yacc.c:1646  */
     {
-		printf("\nEND COMMENT\n");
+		printf("\nEND COMMENT\n\n");
 	}
 #line 1443 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -1475,13 +1475,15 @@ yyreduce:
     {
 		if(strstr((yyvsp[-3].string), "l") != '\0')printf("Println : ");
 		else printf("Print : ");
-		printf("%f\n", (yyvsp[-1].f_val));
+		if((int)(yyvsp[-1].f_val) == (yyvsp[-1].f_val))
+			printf("%d\n", (int)(yyvsp[-1].f_val));
+		else printf("%f\n", (yyvsp[-1].f_val));
 	}
-#line 1481 "y.tab.c" /* yacc.c:1646  */
+#line 1483 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 151 "compiler_hw2.y" /* yacc.c:1646  */
+#line 153 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		dec_flag = 1;
 	 	TYPE = (yyvsp[-2].string);
@@ -1491,16 +1493,16 @@ yyreduce:
 		}
 		
 		value = (yyvsp[0].f_val);
-		printf("ASSIGN\n");
+		//printf("ASSIGN\n");
 		insert_symbol((yyvsp[-3].string));
 		float_flag = 0;
 		dec_flag = 0;
 	}
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1502 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 165 "compiler_hw2.y" /* yacc.c:1646  */
+#line 167 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		dec_flag = 1;
 		TYPE = (yyvsp[0].string);
@@ -1508,47 +1510,47 @@ yyreduce:
 		insert_symbol((yyvsp[-1].string));
 		dec_flag = 0;
 	}
-#line 1512 "y.tab.c" /* yacc.c:1646  */
+#line 1514 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 174 "compiler_hw2.y" /* yacc.c:1646  */
+#line 176 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val) = (yyvsp[0].i_val);
 	}
-#line 1520 "y.tab.c" /* yacc.c:1646  */
+#line 1522 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 177 "compiler_hw2.y" /* yacc.c:1646  */
+#line 179 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val) = (yyvsp[0].f_val);
 		float_flag = 1;
 		OP_float_flag = 1;
 	}
-#line 1530 "y.tab.c" /* yacc.c:1646  */
+#line 1532 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 184 "compiler_hw2.y" /* yacc.c:1646  */
+#line 186 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.string) = (yyvsp[0].string); }
-#line 1536 "y.tab.c" /* yacc.c:1646  */
+#line 1538 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 185 "compiler_hw2.y" /* yacc.c:1646  */
+#line 187 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.string) = (yyvsp[0].string); }
-#line 1542 "y.tab.c" /* yacc.c:1646  */
+#line 1544 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 186 "compiler_hw2.y" /* yacc.c:1646  */
+#line 188 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.string) = (yyvsp[0].string); }
-#line 1548 "y.tab.c" /* yacc.c:1646  */
+#line 1550 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 189 "compiler_hw2.y" /* yacc.c:1646  */
+#line 191 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Greater than?: ");
 		if((yyvsp[-2].f_val) > (yyvsp[0].f_val)){
@@ -1556,11 +1558,11 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1560 "y.tab.c" /* yacc.c:1646  */
+#line 1562 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 196 "compiler_hw2.y" /* yacc.c:1646  */
+#line 198 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Less than?: ");
 		if((yyvsp[-2].f_val) < (yyvsp[0].f_val)){
@@ -1568,11 +1570,11 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1572 "y.tab.c" /* yacc.c:1646  */
+#line 1574 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 203 "compiler_hw2.y" /* yacc.c:1646  */
+#line 205 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Greater than or Equal?: ");
 		if(((yyvsp[-2].f_val) > (yyvsp[0].f_val))|((yyvsp[-2].f_val) == (yyvsp[0].f_val)) ){
@@ -1580,11 +1582,11 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1584 "y.tab.c" /* yacc.c:1646  */
+#line 1586 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 210 "compiler_hw2.y" /* yacc.c:1646  */
+#line 212 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Less than or Equal?: ");
 		if(((yyvsp[-2].f_val) < (yyvsp[0].f_val))|((yyvsp[-2].f_val) == (yyvsp[0].f_val)) ){
@@ -1592,11 +1594,11 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1596 "y.tab.c" /* yacc.c:1646  */
+#line 1598 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 217 "compiler_hw2.y" /* yacc.c:1646  */
+#line 219 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Equal?: ");
 		if((yyvsp[-2].f_val) == (yyvsp[0].f_val) ){
@@ -1604,11 +1606,11 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1608 "y.tab.c" /* yacc.c:1646  */
+#line 1610 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 224 "compiler_hw2.y" /* yacc.c:1646  */
+#line 226 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("<Comparason>Not Equal?: ");
 		if((yyvsp[-2].f_val) != (yyvsp[0].f_val) ){
@@ -1616,61 +1618,61 @@ yyreduce:
 		}
 		else printf("False\n");
 	}
-#line 1620 "y.tab.c" /* yacc.c:1646  */
+#line 1622 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 233 "compiler_hw2.y" /* yacc.c:1646  */
+#line 235 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("ASSIGN\n");
-		type_check((yyvsp[-2].string));
-		symbol_table[index]->value = (yyvsp[0].f_val);;
+		if(type_check((yyvsp[-2].string)))
+			symbol_table[index]->value = (yyvsp[0].f_val);;
 	}
-#line 1630 "y.tab.c" /* yacc.c:1646  */
+#line 1632 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 238 "compiler_hw2.y" /* yacc.c:1646  */
+#line 240 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("ADD ASSIGN\n");
-		type_check((yyvsp[-2].string));
-		symbol_table[index]->value += (yyvsp[0].f_val);
+		if(type_check((yyvsp[-2].string)))
+			symbol_table[index]->value += (yyvsp[0].f_val);
 	}
-#line 1640 "y.tab.c" /* yacc.c:1646  */
+#line 1642 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 243 "compiler_hw2.y" /* yacc.c:1646  */
+#line 245 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("SUB ASSIGN\n");
-		type_check((yyvsp[-2].string));
-		symbol_table[index]->value -= (yyvsp[0].f_val);
+		if(type_check((yyvsp[-2].string)))
+			symbol_table[index]->value -= (yyvsp[0].f_val);
 	}
-#line 1650 "y.tab.c" /* yacc.c:1646  */
+#line 1652 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 248 "compiler_hw2.y" /* yacc.c:1646  */
+#line 250 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("MUL ASSIGN\n");
-		type_check((yyvsp[-2].string));
+		if(type_check((yyvsp[-2].string)))
 		symbol_table[index]->value *= (yyvsp[0].f_val);
 	}
-#line 1660 "y.tab.c" /* yacc.c:1646  */
+#line 1662 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 253 "compiler_hw2.y" /* yacc.c:1646  */
+#line 255 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("DIV ASSIGN\n");
-		type_check((yyvsp[-2].string));
+		if(type_check((yyvsp[-2].string)))
 		symbol_table[index]->value *= (yyvsp[0].f_val);
 	}
-#line 1670 "y.tab.c" /* yacc.c:1646  */
+#line 1672 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 258 "compiler_hw2.y" /* yacc.c:1646  */
+#line 260 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("MOD ASSIGN\n");
 		if((index = lookup_symbol((yyvsp[-2].string))) == -1){
@@ -1679,55 +1681,55 @@ yyreduce:
 		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
 			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", (yyvsp[-2].string), count);
 		}
-		if((OP_float_flag == 1)||strcmp(symbol_table[index]->type,"float32")==0){
+		else if((OP_float_flag == 1)||strcmp(symbol_table[index]->type,"float32")==0){
 			printf("<ERROR>MOD operation can't deal with type float (line %d)\n", count);
-		}
+		}else
+		symbol_table[index]->value =(int)symbol_table[index]->value%(int)(yyvsp[0].f_val);
 		float_flag = 0;
 		OP_float_flag = 0;
 		}
-		symbol_table[index]->value =(int)symbol_table[index]->value%(int)(yyvsp[0].f_val);
 	}
-#line 1691 "y.tab.c" /* yacc.c:1646  */
+#line 1693 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 276 "compiler_hw2.y" /* yacc.c:1646  */
+#line 278 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val) = (yyvsp[-1].f_val);
 	}
-#line 1699 "y.tab.c" /* yacc.c:1646  */
+#line 1701 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 279 "compiler_hw2.y" /* yacc.c:1646  */
+#line 281 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("Add\n");
 		(yyval.f_val)  =  (yyvsp[-2].f_val) + (yyvsp[0].f_val); 
 	}
-#line 1708 "y.tab.c" /* yacc.c:1646  */
+#line 1710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 283 "compiler_hw2.y" /* yacc.c:1646  */
+#line 285 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("Sub\n");
 		(yyval.f_val)  =  (yyvsp[-2].f_val) - (yyvsp[0].f_val); 
 		
 	}
-#line 1718 "y.tab.c" /* yacc.c:1646  */
+#line 1720 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 288 "compiler_hw2.y" /* yacc.c:1646  */
+#line 290 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("Mul\n");
 			(yyval.f_val)  =  (yyvsp[-2].f_val) * (yyvsp[0].f_val); 
 	}
-#line 1727 "y.tab.c" /* yacc.c:1646  */
+#line 1729 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 292 "compiler_hw2.y" /* yacc.c:1646  */
+#line 294 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		if((yyvsp[0].f_val) == 0) printf("<ERROR>The divisor can’t be 0 (line %d)\n", count);
 		else{
@@ -1743,11 +1745,11 @@ yyreduce:
 		}
 		}
 	}
-#line 1747 "y.tab.c" /* yacc.c:1646  */
+#line 1749 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 307 "compiler_hw2.y" /* yacc.c:1646  */
+#line 309 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		printf("Mod\n");
 		if( OP_float_flag == 1){
@@ -1757,39 +1759,39 @@ yyreduce:
 		int a = (yyvsp[-2].f_val); int b = (yyvsp[0].f_val); 
 		(yyval.f_val)  =  a % b;
 	}
-#line 1761 "y.tab.c" /* yacc.c:1646  */
+#line 1763 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 316 "compiler_hw2.y" /* yacc.c:1646  */
+#line 318 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val)  =  (yyvsp[-1].f_val);
 		printf("INC\n");
 		symbol_table[index]->value = (yyvsp[-1].f_val)+1;
 	}
-#line 1771 "y.tab.c" /* yacc.c:1646  */
+#line 1773 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 321 "compiler_hw2.y" /* yacc.c:1646  */
+#line 323 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val)  =  (yyvsp[-1].f_val);
 		printf("DEC\n");
 		symbol_table[index]->value = (yyvsp[-1].f_val)-1;
 	}
-#line 1781 "y.tab.c" /* yacc.c:1646  */
+#line 1783 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 326 "compiler_hw2.y" /* yacc.c:1646  */
+#line 328 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		(yyval.f_val) = (yyvsp[0].f_val);
 	}
-#line 1789 "y.tab.c" /* yacc.c:1646  */
+#line 1791 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 329 "compiler_hw2.y" /* yacc.c:1646  */
+#line 331 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		if((index = lookup_symbol((yyvsp[0].string))) == -1){
 			printf("<ERROR> can’t find variable %s (line %d)\n", (yyvsp[0].string), count);
@@ -1804,11 +1806,11 @@ yyreduce:
 			(yyval.f_val) = symbol_table[index]->value;
 		}	
 	}
-#line 1808 "y.tab.c" /* yacc.c:1646  */
+#line 1810 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1812 "y.tab.c" /* yacc.c:1646  */
+#line 1814 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2036,7 +2038,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 344 "compiler_hw2.y" /* yacc.c:1906  */
+#line 346 "compiler_hw2.y" /* yacc.c:1906  */
 
 
 /* C code section */
@@ -2049,15 +2051,18 @@ int main(int argc, char** argv)
 	dump_symbol();
     return 0;
 }
-void type_check(char * name){
+int type_check(char * name){
 		if((index = lookup_symbol(name)) == -1){
 			printf("<ERROR> can’t find variable %s (line %d)\n", name, count);
+			return 0;
 		}else{
 		if(float_flag == 1 && strcmp(symbol_table[index]->type,"int")==0){
 			printf("<ERROR>Try to assign a float number to a int varible: %s (line: %d)\n", name, count);
+			return 0;
 		}
 		float_flag = 0;
 		OP_float_flag = 0;
+		return 1;
 		}
 }
 void insert_symbol(char* s) {

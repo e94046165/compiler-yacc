@@ -13,7 +13,7 @@ parser:
 	yacc ${YFLAG} ${FNAME}.y
 
 test: compile
-	./${EXE} < input/test.go
+	./${EXE} < input/semantic_analysis.go
 
 clean:
 	rm ${EXE} y.tab* lex.* y.output
